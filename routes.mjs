@@ -13,15 +13,11 @@ export default function routes(app) {
         }).catch((error) => {
           console.log(error);
         })
-      // Response should be 
-      // 1) to use the search term to send query to Github Search API using GET
-      // 2) open a new window to the side to show the results 
 
     } catch (error) {
       console.log(error);
     }
   });
-
 
   // special JS page. Include the webpack index.html file
   app.get('/home', (request, response) => {
