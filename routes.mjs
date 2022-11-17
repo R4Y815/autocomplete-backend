@@ -32,47 +32,43 @@ export default function routes(app) {
 
 
   app.post('/autocomplete', async (request, response) => {
-    try {
-      console.log(request.body);
-      const { input } = request.body;
-      const octokit = new Octokit({
-        auth: ghToken
+    console.log(request.body);
+    const { input } = request.body;
+    const octokit = new Octokit({
+      auth: ghToken
+    })
+    await octokit.request(`https://api.github.com/search/topics?q=${input}&per_page=5`, {})
+      .then((results) => {
+        const tempTitles = [];
+        const items = results.data.items;
+        items.forEach((x) => {
+          if (x.name.includes(input)) { tempTitles.push(x.name) }
+        });
+        const retPossibles = { possibles: tempTitles }
+        response.send(retPossibles);
+      }).catch((error) => {
+        console.log(error);
+        const errorCode = error.status;
+        const code = { errorCode };
+        response.status(403).send(code);
       })
-      await octokit.request(`https://api.github.com/search/topics?q=${input}&per_page=5`, {})
-        .then((results) => {
-          const tempTitles = [];
-          const items = results.data.items;
-          items.forEach((x) => {
-            if (x.name.includes(input)) { tempTitles.push(x.name) }
-          });
-          const retPossibles = { possibles: tempTitles }
-          response.send(retPossibles);
-        }).catch((error) => {
-          console.log(error);
-        })
-
-    } catch (error) {
-      console.log(error);
-    }
   });
 
 
 
 
   app.post('/searchGitHubTopic', async (request, response) => {
-    try {
-      const { toSearch } = request.body;
+    const { toSearch } = request.body;
+    axios.get(`https://api.github.com/search/topics?q=${toSearch}&per_page=100`)
+      .then((results) => {
+        response.send(results.data);
+      }).catch((error) => {
+        console.log(error);
+        const errorCode = error.status;
+        const code = { errorCode };
+        response.status(403).send(code);
+      })
 
-      axios.get(`https://api.github.com/search/topics?q=${toSearch}&per_page=100`)
-        .then((results) => {
-          response.send(results.data);
-        }).catch((error) => {
-          console.log(error);
-        })
-
-    } catch (error) {
-      console.log(error);
-    }
   });
 
   // special JS page. Include the webpack index.html file
