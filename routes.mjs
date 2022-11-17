@@ -37,7 +37,7 @@ export default function routes(app) {
     const octokit = new Octokit({
       auth: ghToken
     })
-    await octokit.request(`https://api.github.com/search/topics?q=${input}&per_page=5`, {})
+    await octokit.request(`https://api.github.com/search/topics?q=${input}&per_page=100`, {})
       .then((results) => {
         const tempTitles = [];
         const items = results.data.items;
