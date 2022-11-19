@@ -59,7 +59,10 @@ export default function routes(app) {
 
   app.post('/searchGitHubTopic', async (request, response) => {
     const { toSearch } = request.body;
-    axios.get(`https://api.github.com/search/topics?q=${toSearch}&per_page=100`)
+    const octokit = new Octokit({
+      auth: ghToken
+    })
+    await octokit.request(`https://api.github.com/search/topics?q=${toSearch}&per_page=100`, {})
       .then((results) => {
         response.send(results.data);
       }).catch((error) => {
